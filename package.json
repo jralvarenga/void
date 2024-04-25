@@ -14,7 +14,9 @@
   "scripts": {
     "test": "npm test",
     "prepare": "husky install",
-    "dev:web": "cd web && npm run dev"
+    "dev:web": "cd web && npm run dev",
+    "commit": "git-cz",
+    "commit:all": "git add -A && git-cz"
   },
   "repository": {
     "type": "git",
