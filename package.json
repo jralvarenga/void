@@ -1,0 +1,40 @@
+{
+  "name": "budio",
+  "version": "1.0.0",
+  "description": "an ai powered bookmark app",
+  "main": "index.js",
+  "private": true,
+  "workspaces": {
+    "packages": [
+    ],
+    "nohoist": [
+      "**"
+    ]
+  },
+  "scripts": {
+    "test": "npm test",
+    "prepare": "husky install",
+    "dev:web": "cd web && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jralvarenga/budio.git"
+  },
+  "author": "Rigo Alvarenga <jralvarenga161@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jralvarenga/budio/issues"
+  },
+  "homepage": "https://github.com/jralvarenga/budio#readme",
+  "devDependencies": {
+    "commitizen": "^4.3.0",
+    "commitlint": "^19.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^8.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  }
+}
