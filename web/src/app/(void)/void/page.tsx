@@ -1,13 +1,20 @@
 'use client'
 
 import { FormEvent, useRef, useState } from 'react'
-import { Search, Plus } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { Search, Plus, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { isUrl } from '@/helpers/isUrl'
+import { useAutosizeTextarea } from '@/hooks/useAutosizeTextarea'
+import CreateNoteDrawer from '@/components/createNoteDrawer'
 
 export default function VoidPage() {
   const [searchValue, setSearchValue] = useState('')
-  const searchInput = useRef<HTMLInputElement>(null)
+  const searchInput = useRef<HTMLTextAreaElement>(null)
+
+  // create a note
+  const [open, setOpen] = useState(false)
+
+  useAutosizeTextarea(searchInput.current, searchValue)
 
   // const handlePasteEvent = useCallback((event: ClipboardEvent) => {
   //   console.log('xd')
@@ -27,30 +34,32 @@ export default function VoidPage() {
   //   }
   // }, [])
 
-  async function getUrlMetadata(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const res = await fetch('/api/scrapper', {
-      method: 'post',
-      body: JSON.stringify({
-        url: '',
-      }),
-    })
-    const data = await res.text()
-    console.log(data)
-  }
+  // async function getUrlMetadata(e: FormEvent<HTMLFormElement>) {
+  //   e.preventDefault()
+  //   const res = await fetch('/api/scrapper', {
+  //     method: 'post',
+  //     body: JSON.stringify({
+  //       url: '',
+  //     }),
+  //   })
+  //   const data = await res.text()
+  //   console.log(data)
+  // }
 
   return (
     // search bar
     <div className="flex w-full items-center justify-center">
       <div className=" flex w-full max-w-xl items-center gap-2">
-        <form className="searchbar-shadow relative flex h-12 w-full items-center gap-3 rounded-full bg-background">
-          <Search className="absolute left-4 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
+        <form className="searchbar-shadow relative flex h-14 w-full items-center gap-3 rounded-full bg-background">
+          <div className="absolute left-4">
+            <Search className=" h-4 w-4 text-muted-foreground" />
+          </div>
+          <textarea
             ref={searchInput}
-            className="h-full w-full rounded-full border bg-inherit p-3 pl-10 duration-300 focus:-mt-3 focus:pl-3 focus:drop-shadow-xl"
-            placeholder="search in your void..."
+            className="h-full w-full resize-none overflow-hidden rounded-3xl border bg-inherit p-3 pl-11 duration-300 focus:-mt-3 focus:pl-4 focus:drop-shadow-xl"
+            placeholder="type in your void..."
             value={searchValue}
+            rows={1}
             onChange={(e) => setSearchValue(e.target.value)}
           />
         </form>
@@ -58,10 +67,17 @@ export default function VoidPage() {
           variant="outline"
           size="icon"
           className="h-12 w-14 rounded-full"
+          onClick={() => setOpen(true)}
         >
-          <Plus className="h-6 w-6" />
+          {isUrl(searchValue) ? (
+            <ArrowRight className="h-6 w-6" />
+          ) : (
+            <Plus className="h-6 w-6" />
+          )}
         </Button>
       </div>
+
+      <CreateNoteDrawer open={open} setOpen={setOpen} />
     </div>
   )
 }
