@@ -1,5 +1,7 @@
 import Navbar from '@/components/navbar'
 import { Metadata } from 'next'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'Budio Void',
@@ -11,6 +13,14 @@ export default function VoidLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const cookieStore = cookies()
+  const token = cookieStore.get('token')
+  const refreshToken = cookieStore.get('refreshToken')
+
+  if (!token?.value || !refreshToken?.value) {
+    redirect('login')
+  }
+
   return (
     <main className="p-5">
       <Navbar />

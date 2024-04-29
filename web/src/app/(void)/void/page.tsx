@@ -1,11 +1,13 @@
 'use client'
 
-import { FormEvent, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Search, Plus, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { isUrl } from '@/helpers/isUrl'
 import { useAutosizeTextarea } from '@/hooks/useAutosizeTextarea'
 import CreateNoteDrawer from '@/components/createNoteDrawer'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/firebase/client'
 
 export default function VoidPage() {
   const [searchValue, setSearchValue] = useState('')

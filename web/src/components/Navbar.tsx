@@ -1,3 +1,5 @@
+'use client'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LogOut, GanttChart } from 'lucide-react'
 import {
@@ -9,8 +11,11 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function Navbar() {
+  const { user } = useAuth()
+
   return (
     <div className="flex items-center justify-between p-3">
       <div>
@@ -23,8 +28,8 @@ export default function Navbar() {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={user?.photoURL as string | undefined} />
+              <AvatarFallback>{user?.displayName}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
