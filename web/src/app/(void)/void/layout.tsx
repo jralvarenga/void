@@ -17,8 +17,8 @@ export default function VoidLayout({
   const token = cookieStore.get('token')
   const refreshToken = cookieStore.get('refreshToken')
 
-  if (!token?.value || !refreshToken?.value) {
-    redirect('login')
+  if (!token?.value && !refreshToken?.value) {
+    redirect('/login')
   }
 
   return (

@@ -1,63 +1,65 @@
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
 } from '@/components/ui/drawer'
 import { Button } from './ui/button'
-import { Dispatch, SetStateAction, useRef, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  SyntheticEvent,
+  useRef,
+  useState,
+} from 'react'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { useAutosizeTextarea } from '@/hooks/useAutosizeTextarea'
+import { BudioApiResponse, NewNoteBody } from 'budio'
+import { auth } from '@/firebase/client'
 
-function NewNoteTitle({
-  value,
-  setValue,
+function NewNoteFormContent({
+  body,
+  setBody,
+  title,
+  setTitle,
+  loading,
 }: {
-  value: string
-  setValue: Dispatch<SetStateAction<string>>
-}) {
-  return (
-    <Input
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      placeholder="New Note"
-      className="border-0 p-0 text-xl font-bold"
-    />
-  )
-}
-
-function NewNoteBody({
-  value,
-  setValue,
-}: {
-  value: string
-  setValue: Dispatch<SetStateAction<string>>
+  title: string
+  setTitle: Dispatch<SetStateAction<string>>
+  body: string
+  setBody: Dispatch<SetStateAction<string>>
+  loading: boolean
 }) {
   const noteBody = useRef<HTMLTextAreaElement>(null)
 
-  useAutosizeTextarea(noteBody.current, value)
+  useAutosizeTextarea(noteBody.current, body)
   return (
     <div className="grid w-full gap-3">
+      <Input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="New Note"
+        className="border-0 p-0 text-xl font-bold"
+        disabled={loading}
+      />
       <Textarea
         ref={noteBody}
         className="h-full w-full resize-none overflow-hidden rounded-xl border-0"
         placeholder="write your thought..."
+        required
         rows={1}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+        disabled={loading}
       />
 
-      <Button>Save</Button>
+      <Button disabled={loading} type="submit">
+        Save
+      </Button>
     </div>
   )
 }
@@ -70,18 +72,44 @@ interface Props {
 export default function CreateNoteDrawer({ open, setOpen }: Props) {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
+  const [loading, setLoading] = useState(false)
   const isDesktop = useMediaQuery('(min-width: 768px)')
+
+  async function newNoteHandle(e: SyntheticEvent) {
+    e.preventDefault()
+    setLoading(true)
+
+    const token = await auth().currentUser?.getIdToken()
+    const jsonBody: NewNoteBody = {
+      title,
+      body,
+    }
+
+    const res = await fetch(`/api/new-note`, {
+      method: 'post',
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(jsonBody),
+    })
+    const data = (await res.json()) as BudioApiResponse<{ noteId: number }>
+    setLoading(false)
+  }
 
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>
-              <NewNoteTitle value={title} setValue={setTitle} />
-            </DialogTitle>
-          </DialogHeader>
-          <NewNoteBody value={body} setValue={setBody} />
+          <DialogHeader></DialogHeader>
+          <form onSubmit={newNoteHandle}>
+            <NewNoteFormContent
+              body={body}
+              setBody={setBody}
+              title={title}
+              setTitle={setTitle}
+              loading={loading}
+            />
+          </form>
         </DialogContent>
       </Dialog>
     )
@@ -90,14 +118,16 @@ export default function CreateNoteDrawer({ open, setOpen }: Props) {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>
-            <NewNoteTitle value={title} setValue={setTitle} />
-          </DrawerTitle>
-        </DrawerHeader>
-        <div className="px-5">
-          <NewNoteBody value={body} setValue={setBody} />
-        </div>
+        <DrawerHeader className="text-left"></DrawerHeader>
+        <form className="px-5" onSubmit={newNoteHandle}>
+          <NewNoteFormContent
+            body={body}
+            setBody={setBody}
+            title={title}
+            setTitle={setTitle}
+            loading={loading}
+          />
+        </form>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>

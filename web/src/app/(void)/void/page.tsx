@@ -1,13 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Search, Plus, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { isUrl } from '@/helpers/isUrl'
 import { useAutosizeTextarea } from '@/hooks/useAutosizeTextarea'
 import CreateNoteDrawer from '@/components/createNoteDrawer'
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '@/firebase/client'
 
 export default function VoidPage() {
   const [searchValue, setSearchValue] = useState('')
@@ -17,24 +15,6 @@ export default function VoidPage() {
   const [open, setOpen] = useState(false)
 
   useAutosizeTextarea(searchInput.current, searchValue)
-
-  // const handlePasteEvent = useCallback((event: ClipboardEvent) => {
-  //   console.log('xd')
-  //   const { key, keyCode } = event
-  //   if (keyCode === 32 || (keyCode >= 65 && keyCode <= 90)) {
-  //     console.log('xd')
-
-  //     // setUserText(prevUserText => `${prevUserText}${key}`);
-  //   }
-  // }, [])
-
-  // useEffect(() => {
-  //   window.addEventListener('paste', handlePasteEvent)
-
-  //   return () => {
-  //     window.removeEventListener('paste', handlePasteEvent)
-  //   }
-  // }, [])
 
   // async function getUrlMetadata(e: FormEvent<HTMLFormElement>) {
   //   e.preventDefault()

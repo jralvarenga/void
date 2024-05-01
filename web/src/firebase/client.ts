@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { connectAuthEmulator, getAuth } from 'firebase/auth'
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -24,9 +25,15 @@ export const initFirebase = () => {
 
 // Initialize Firebase Authentication and get a reference to the service
 const firebaseAuth = getAuth(app)
+const firebaseFirestore = getFirestore(app)
 if (process.env.NODE_ENV === 'development') {
   connectAuthEmulator(firebaseAuth, 'http://127.0.0.1:9099')
+  connectFirestoreEmulator(firebaseFirestore, '127.0.0.1', 8080)
 }
+
 export const auth = () => {
   return firebaseAuth
+}
+export const firestore = () => {
+  return firebaseFirestore
 }
