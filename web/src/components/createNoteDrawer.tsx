@@ -7,7 +7,7 @@ import {
   DrawerFooter,
   DrawerHeader,
 } from '@/components/ui/drawer'
-import { Button } from './ui/button'
+import { toast } from 'sonner'
 import {
   Dispatch,
   SetStateAction,
@@ -15,11 +15,13 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Input } from './ui/input'
-import { Textarea } from './ui/textarea'
 import { useAutosizeTextarea } from '@/hooks/useAutosizeTextarea'
 import { BudioApiResponse, NewNoteBody } from 'budio'
 import { auth } from '@/firebase/client'
+import { Toaster } from '@/components/ui/sonner'
+import { Textarea } from './ui/textarea'
+import { Input } from './ui/input'
+import { Button } from './ui/button'
 
 function NewNoteFormContent({
   body,
@@ -79,28 +81,36 @@ export default function CreateNoteDrawer({ open, setOpen }: Props) {
     e.preventDefault()
     setLoading(true)
 
-    const token = await auth().currentUser?.getIdToken()
     const jsonBody: NewNoteBody = {
       title,
       body,
     }
 
-    const res = await fetch(`/api/new-note`, {
-      method: 'post',
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(jsonBody),
-    })
-    const data = (await res.json()) as BudioApiResponse<{ noteId: number }>
-    setLoading(false)
+    try {
+      const token = await auth().currentUser?.getIdToken()
+      const res = await fetch(`/api/new-note`, {
+        method: 'post',
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(jsonBody),
+      })
+      ;(await res.json()) as BudioApiResponse<{ noteId: number }>
+      setOpen(false)
+      toast.success(`Note added.`, {
+        description: `${title !== '' ? ` ${title}` : ''} added`,
+      })
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+    }
   }
 
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader></DialogHeader>
+          <DialogHeader />
           <form onSubmit={newNoteHandle}>
             <NewNoteFormContent
               body={body}
@@ -111,6 +121,7 @@ export default function CreateNoteDrawer({ open, setOpen }: Props) {
             />
           </form>
         </DialogContent>
+        <Toaster />
       </Dialog>
     )
   }
@@ -118,7 +129,7 @@ export default function CreateNoteDrawer({ open, setOpen }: Props) {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
-        <DrawerHeader className="text-left"></DrawerHeader>
+        <DrawerHeader className="text-left" />
         <form className="px-5" onSubmit={newNoteHandle}>
           <NewNoteFormContent
             body={body}
@@ -134,6 +145,7 @@ export default function CreateNoteDrawer({ open, setOpen }: Props) {
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
+      <Toaster position="top-right" />
     </Drawer>
   )
 }
