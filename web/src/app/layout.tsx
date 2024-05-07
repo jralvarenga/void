@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Inter as FontSans } from 'next/font/google'
 import { cn } from '@/lib/utils'
+import { ReactNode } from 'react'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -16,7 +17,7 @@ const fontSans = FontSans({
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
 }>) {
   return (
     <html lang="en">

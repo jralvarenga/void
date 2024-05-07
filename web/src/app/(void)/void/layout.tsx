@@ -2,6 +2,7 @@ import Navbar from '@/components/navbar'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { ReactNode } from 'react'
 
 export const metadata: Metadata = {
   title: 'Budio Void',
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default function VoidLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
 }>) {
   const cookieStore = cookies()
   const token = cookieStore.get('token')
