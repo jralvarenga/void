@@ -5,7 +5,7 @@ import { Search, Plus, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { isUrl } from '@/helpers/isUrl'
 import { useAutosizeTextarea } from '@/hooks/useAutosizeTextarea'
-import CreateNoteDrawer from '@/components/createNoteDrawer'
+import NoteEditorDrawer from '@/components/noteEditor'
 
 export default function VoidPage() {
   const [searchValue, setSearchValue] = useState('')
@@ -324,7 +324,7 @@ export default function VoidPage() {
         </div>
       </div>
 
-      <CreateNoteDrawer open={open} setOpen={setOpen} />
+      {open && <NoteEditorDrawer open={open} setOpen={setOpen} />}
     </div>
   )
 }

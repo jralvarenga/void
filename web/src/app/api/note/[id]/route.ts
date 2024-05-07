@@ -2,9 +2,12 @@ import { API_CODES, API_MESSAGES } from '@/constants/api'
 import { firestore } from '@/firebase/client'
 import { verifyIdToken } from '@/helpers/verifyIdToken'
 import { BudioApiResponse, NewNoteBody, Note } from 'budio'
-import { addDoc, collection } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 
-export async function POST(req: Request) {
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
   let userId: string
   try {
     const user = await verifyIdToken(req.headers)
@@ -40,17 +43,14 @@ export async function POST(req: Request) {
     updatedAt: null,
   }
 
-  const docRef = await addDoc(
-    collection(firestore(), 'users', userId, 'notes'),
-    {
-      ...newNote,
-    },
-  )
+  await updateDoc(doc(firestore(), 'users', userId, 'notes', params.id), {
+    ...newNote,
+  })
 
   return Response.json({
     data: {
-      noteId: docRef.id,
+      noteId: params.id,
     },
     code: API_CODES.SUCCESS,
-  } as BudioApiResponse<{ noteId: string }>)
+  } as BudioApiResponse<any>)
 }

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { Icons } from './genIcons'
 import {
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
@@ -13,6 +12,7 @@ import {
 } from 'firebase/auth'
 import { auth } from '@/firebase/client'
 import { handleLoginStoreWithToken } from '@/app/actions/auth'
+import { Icons } from './genIcons'
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -26,7 +26,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     event.preventDefault()
     setIsLoading(true)
     const emailMethods = await fetchSignInMethodsForEmail(auth(), email)
-    console.log(emailMethods)
     if (
       emailMethods.includes('password') ||
       emailMethods.length > 0 ||
@@ -44,7 +43,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     if (emailMethods.includes('password')) {
       const { user } = await signInWithEmailAndPassword(auth(), email, password)
       const token = await user.getIdToken()
-      const refreshToken = user.refreshToken
+      const { refreshToken } = user
       await handleLoginStoreWithToken({ refreshToken, token })
     }
     if (!emailMethods.includes('password')) {
@@ -54,7 +53,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         password,
       )
       const token = await user.getIdToken()
-      const refreshToken = user.refreshToken
+      const { refreshToken } = user
       await handleLoginStoreWithToken({ refreshToken, token })
     }
     if (!emailMethods.includes('password') && emailMethods.length > 0) {
