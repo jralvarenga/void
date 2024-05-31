@@ -1,5 +1,6 @@
 import { auth } from '@/firebase/client'
 import { BudioApiResponse, NewNoteBody } from 'budio'
+import { revalidateTag } from 'next/cache'
 import {
   Dispatch,
   SetStateAction,
@@ -77,7 +78,7 @@ export function useAutosaveNote({
     try {
       const token = await auth().currentUser?.getIdToken()
       const res = await fetch(
-        noteId ? `/api/note/${noteId}` : `/api/new-note`,
+        noteId ? `/api/notes/${noteId}` : `/api/new-note`,
         {
           method: noteId ? 'put' : 'post',
           headers: {
@@ -92,6 +93,7 @@ export function useAutosaveNote({
       setNoteId(data.noteId)
       setPrevBody(body)
       setPrevTitle(title)
+      revalidateTag('get_notes')
 
       // setOpen(false)
       // toast.success(`Note Saved`, {
@@ -108,12 +110,19 @@ export function useAutosaveNote({
    */
   useEffect(() => {
     const autosaveInterval = setInterval(() => {
-      if (prevBody !== body || prevTitle !== title) {
+      if (
+        prevBody !== body ||
+        (prevTitle !== title && prevBody !== '') ||
+        prevTitle !== ''
+      ) {
         noteSavingHandle()
       }
     }, 15 * 1000)
 
-    return () => clearInterval(autosaveInterval)
+    return () => {
+      noteSavingHandle()
+      clearInterval(autosaveInterval)
+    }
   }, [body, noteSavingHandle, prevBody, prevTitle, title])
 
   return {

@@ -1,4 +1,5 @@
 import Navbar from '@/components/navbar'
+import Toolbar from '@/components/toolbar'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Your void',
 }
 
-export default function VoidLayout({
+export default async function VoidLayout({
   children,
 }: Readonly<{
   children: ReactNode
@@ -26,6 +27,7 @@ export default function VoidLayout({
     <main className="p-5">
       <Navbar />
       <br />
+      <Toolbar />
       {children}
     </main>
   )
